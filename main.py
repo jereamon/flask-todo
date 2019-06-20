@@ -48,8 +48,14 @@ def incomplete_tasks():
         return redirect(url_for('login'))
 
     if request.method == 'POST':
-        current_user = User.select().where(User.name == session['username']).get()
-        
+        user = User.select().where(User.name == session['username']).get()
+
+        Task.update(performed=datetime.now(), performed_by=user)\
+            .where(Task.id == request.form['task_id'])\
+            .execute()
+
+    return render_template('incomplete.jinja2', tasks=Task.select().where(Task.performed.is_null()))
+
 
 
 
